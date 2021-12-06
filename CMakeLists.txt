@@ -57,7 +57,7 @@ if(DEFINED NBT_DEST_DIR)
 endif()
 
 if(NBT_USE_ZLIB)
-    target_link_libraries(${NBT_NAME} z)
+    target_link_libraries(${NBT_NAME} ZLIB::ZLIB)
 endif()
 set_property(TARGET ${NBT_NAME} PROPERTY CXX_STANDARD 11)
 generate_export_header(${NBT_NAME} BASE_NAME nbt)
