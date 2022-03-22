@@ -126,4 +126,9 @@ void tag_array<int64_t>::write_payload(io::stream_writer& writer) const
         writer.write_num(i);
 }
 
+//Explicit instantiations
+template class NBT_EXPORT tag_array<int8_t>;
+template class NBT_EXPORT tag_array<int32_t>;
+template class NBT_EXPORT tag_array<int64_t>;
+
 }

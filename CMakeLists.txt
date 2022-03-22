@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.9.4)
 project(libnbt++
     VERSION 2.3)
 
@@ -8,9 +8,9 @@ option(NBT_USE_ZLIB "Build additional zlib stream functionality" ON)
 option(NBT_BUILD_TESTS "Build the unit tests. Requires CxxTest." ON)
 
 if(NBT_NAME)
-	message("Using override nbt++ name: ${NBT_NAME}")
+    message("Using override nbt++ name: ${NBT_NAME}")
 else()
-	set(NBT_NAME nbt++)
+    set(NBT_NAME nbt++)
 endif()
 
 # hide this from includers.
@@ -48,16 +48,16 @@ target_include_directories(${NBT_NAME} PUBLIC include ${CMAKE_CURRENT_BINARY_DIR
 
 # Install it
 if(DEFINED NBT_DEST_DIR)
-	install(
-		TARGETS ${NBT_NAME}
-		ARCHIVE DESTINATION ${LIBRARY_DEST_DIR}
-		RUNTIME DESTINATION ${LIBRARY_DEST_DIR}
-		LIBRARY DESTINATION ${LIBRARY_DEST_DIR}
-	)
+    install(
+        TARGETS ${NBT_NAME}
+        ARCHIVE DESTINATION ${LIBRARY_DEST_DIR}
+        RUNTIME DESTINATION ${LIBRARY_DEST_DIR}
+        LIBRARY DESTINATION ${LIBRARY_DEST_DIR}
+    )
 endif()
 
 if(NBT_USE_ZLIB)
-    target_link_libraries(${NBT_NAME} z)
+    target_link_libraries(${NBT_NAME} ZLIB::ZLIB)
 endif()
 set_property(TARGET ${NBT_NAME} PROPERTY CXX_STANDARD 11)
 generate_export_header(${NBT_NAME} BASE_NAME nbt)

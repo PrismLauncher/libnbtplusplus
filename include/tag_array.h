@@ -126,11 +126,6 @@ typedef tag_array<int8_t> tag_byte_array;
 typedef tag_array<int32_t> tag_int_array;
 typedef tag_array<int64_t> tag_long_array;
 
-//Explicit instantiations
-template class NBT_EXPORT tag_array<int8_t>;
-template class NBT_EXPORT tag_array<int32_t>;
-template class NBT_EXPORT tag_array<int64_t>;
-
 }
 
 #endif // TAG_ARRAY_H_INCLUDED
