@@ -21,8 +21,11 @@
 #define TAG_ARRAY_H_INCLUDED
 
 #include "crtp_tag.h"
+#include "io/stream_reader.h"
+#include "io/stream_writer.h"
 #include <type_traits>
 #include <vector>
+#include <istream>
 
 namespace nbt
 {
@@ -120,6 +123,107 @@ template<class T> bool operator==(const tag_array<T>& lhs, const tag_array<T>& r
 { return lhs.get() == rhs.get(); }
 template<class T> bool operator!=(const tag_array<T>& lhs, const tag_array<T>& rhs)
 { return !(lhs == rhs); }
+
+//Slightly different between byte_array and int_array
+//Reading
+template<>
+inline void tag_array<int8_t>::read_payload(io::stream_reader& reader)
+{
+    int32_t length;
+    reader.read_num(length);
+    if(length < 0)
+        reader.get_istr().setstate(std::ios::failbit);
+    if(!reader.get_istr())
+        throw io::input_error("Error reading length of tag_byte_array");
+
+    data.resize(length);
+    reader.get_istr().read(reinterpret_cast<char*>(data.data()), length);
+    if(!reader.get_istr())
+        throw io::input_error("Error reading contents of tag_byte_array");
+}
+
+template<typename T>
+inline void tag_array<T>::read_payload(io::stream_reader& reader)
+{
+    int32_t length;
+    reader.read_num(length);
+    if(length < 0)
+        reader.get_istr().setstate(std::ios::failbit);
+    if(!reader.get_istr())
+        throw io::input_error("Error reading length of generic array tag");
+
+    data.clear();
+    data.reserve(length);
+    for(T i = 0; i < length; ++i)
+    {
+        T val;
+        reader.read_num(val);
+        data.push_back(val);
+    }
+    if(!reader.get_istr())
+        throw io::input_error("Error reading contents of generic array tag");
+}
+
+template<>
+inline void tag_array<int64_t>::read_payload(io::stream_reader& reader)
+{
+    int32_t length;
+    reader.read_num(length);
+    if(length < 0)
+        reader.get_istr().setstate(std::ios::failbit);
+    if(!reader.get_istr())
+        throw io::input_error("Error reading length of tag_long_array");
+
+    data.clear();
+    data.reserve(length);
+    for(int32_t i = 0; i < length; ++i)
+    {
+        int64_t val;
+        reader.read_num(val);
+        data.push_back(val);
+    }
+    if(!reader.get_istr())
+        throw io::input_error("Error reading contents of tag_long_array");
+}
+
+//Writing
+template<>
+inline void tag_array<int8_t>::write_payload(io::stream_writer& writer) const
+{
+    if(size() > io::stream_writer::max_array_len)
+    {
+        writer.get_ostr().setstate(std::ios::failbit);
+        throw std::length_error("Byte array is too large for NBT");
+    }
+    writer.write_num(static_cast<int32_t>(size()));
+    writer.get_ostr().write(reinterpret_cast<const char*>(data.data()), data.size());
+}
+
+template<typename T>
+inline void tag_array<T>::write_payload(io::stream_writer& writer) const
+{
+    if(size() > io::stream_writer::max_array_len)
+    {
+        writer.get_ostr().setstate(std::ios::failbit);
+        throw std::length_error("Generic array is too large for NBT");
+    }
+    writer.write_num(static_cast<int32_t>(size()));
+    for(T i: data)
+        writer.write_num(i);
+}
+
+template<>
+inline void tag_array<int64_t>::write_payload(io::stream_writer& writer) const
+{
+    if(size() > io::stream_writer::max_array_len)
+    {
+        writer.get_ostr().setstate(std::ios::failbit);
+        throw std::length_error("Long array is too large for NBT");
+    }
+    writer.write_num(static_cast<int32_t>(size()));
+    for(int64_t i: data)
+        writer.write_num(i);
+}
 
 //Typedefs that should be used instead of the template tag_array.
 typedef tag_array<int8_t> tag_byte_array;

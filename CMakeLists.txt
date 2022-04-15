@@ -21,7 +21,6 @@ include(GenerateExportHeader)
 set(NBT_SOURCES
     src/endian_str.cpp
     src/tag.cpp
-    src/tag_array.cpp
     src/tag_compound.cpp
     src/tag_list.cpp
     src/tag_string.cpp
