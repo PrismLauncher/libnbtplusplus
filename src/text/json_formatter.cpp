@@ -35,7 +35,7 @@ namespace //anonymous
     class json_fmt_visitor : public const_nbt_visitor
     {
     public:
-        json_fmt_visitor(std::ostream& os, const json_formatter& fmt):
+        json_fmt_visitor(std::ostream& os):
             os(os)
         {}
 
@@ -199,7 +199,7 @@ namespace //anonymous
 
 void json_formatter::print(std::ostream& os, const tag& t) const
 {
-    json_fmt_visitor v(os, *this);
+    json_fmt_visitor v(os);
     t.accept(v);
 }
 
