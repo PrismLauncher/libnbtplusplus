@@ -121,6 +121,7 @@ public:
 
 private:
     std::istream& is;
+    int depth = 0;
     const endian::endian endian;
 };
 

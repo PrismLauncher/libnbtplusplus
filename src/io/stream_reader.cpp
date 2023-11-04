@@ -27,6 +27,8 @@ namespace nbt
 namespace io
 {
 
+constexpr int MAX_DEPTH = 1024;
+
 std::pair<std::string, std::unique_ptr<tag_compound>> read_compound(std::istream& is, endian::endian e)
 {
     return stream_reader(is, e).read_compound();
@@ -74,6 +76,18 @@ std::pair<std::string, std::unique_ptr<tag>> stream_reader::read_tag()
 
 std::unique_ptr<tag> stream_reader::read_payload(tag_type type)
 {
+    switch (type) {
+        // container types
+        case tag_type::List:
+        case tag_type::Compound:
+        case tag_type::Int_Array:
+        case tag_type::Byte_Array:
+        case tag_type::Long_Array:
+            ++depth;
+            if (depth > MAX_DEPTH)
+                throw input_error("Too deeply nested");
+    }
+
     std::unique_ptr<tag> t = tag::create(type);
     t->read_payload(*this);
     return t;
