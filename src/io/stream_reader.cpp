@@ -27,7 +27,7 @@ namespace nbt
 namespace io
 {
 
-constexpr int MAX_DEPTH = 1024;
+static constexpr int MAX_DEPTH = 1024;
 
 std::pair<std::string, std::unique_ptr<tag_compound>> read_compound(std::istream& is, endian::endian e)
 {
