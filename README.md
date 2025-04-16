@@ -1,3 +1,7 @@
+> [!NOTE]
+> This is a fork primarily maintained for use in Prism Launcher's Server and World viewer.
+> Changes outside of bug or compatibility fixes for these features are unlikely to be made.
+
 # libnbt++ 2
 
 libnbt++ is a free C++ library for Minecraft's file format Named Binary Tag
