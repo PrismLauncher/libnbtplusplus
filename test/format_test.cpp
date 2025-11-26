@@ -18,7 +18,8 @@
  * along with libnbt++.  If not, see <http://www.gnu.org/licenses/>.
  */
 //#include "text/json_formatter.h"
-//#include "io/stream_reader.h"
+#include "io/stream_reader.h"
+#include "io/stream_writer.h"
 #include <fstream>
 #include <iostream>
 #include <limits>
@@ -28,7 +29,7 @@ using namespace nbt;
 
 int main()
 {
-    //TODO: Write that into a file
+    // Write that into a file and read back for testing
     tag_compound comp{
         {"byte", tag_byte(-128)},
         {"short", tag_short(-32768)},
@@ -79,4 +80,20 @@ int main()
     std::cout << "----- default operator<<:\n";
     std::cout << comp;
     std::cout << "\n-----" << std::endl;
+
+    // Write to file and read back
+    {
+        std::ofstream out("test_output.nbt", std::ios::binary);
+        nbt::io::write_compound(out, comp);
+    }
+
+    {
+        std::ifstream in("test_output.nbt", std::ios::binary);
+        auto [read_comp, name] = nbt::io::read_compound(in);
+        std::cout << "----- read back from file:\n";
+        std::cout << read_comp;
+        std::cout << "\n-----" << std::endl;
+    }
+
+    return 0;
 }

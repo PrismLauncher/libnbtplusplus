@@ -45,6 +45,8 @@ endif()
 add_library(${NBT_NAME} ${NBT_SOURCES})
 target_include_directories(${NBT_NAME} PUBLIC include ${CMAKE_CURRENT_BINARY_DIR})
 
+# Local developer tests are built in the test subdirectory now
+
 # Install it
 if(DEFINED NBT_DEST_DIR)
     install(

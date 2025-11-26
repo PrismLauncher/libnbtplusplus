@@ -97,9 +97,20 @@ void ozlibstream::close()
     }
     catch(...)
     {
-        setstate(badbit); //FIXME: This will throw the wrong type of exception
-                          //but there's no good way of setting the badbit
-                          //without causing an exception when exceptions is set
+        // Setting the stream state while exceptions are enabled may cause
+        // `setstate` to throw an `ios_base::failure` which would replace
+        // the original exception. Temporarily disable exceptions on this
+        // stream, set the `badbit`, then restore the exception mask.
+        std::ios_base::iostate old_ex = exceptions();
+        try {
+            exceptions(std::ios_base::goodbit);
+            setstate(std::ios_base::badbit);
+        }
+        catch(...) {
+            // If anything unexpected happens while setting state, swallow
+            // it — we don't want this to throw here.
+        }
+        exceptions(old_ex);
     }
 }
 

@@ -20,6 +20,10 @@
 #include "value.h"
 #include "nbt_tags.h"
 #include <typeinfo>
+#include <algorithm>
+#include <initializer_list>
+#include <cstdint>
+#include <memory>
 
 namespace nbt
 {
@@ -56,145 +60,99 @@ void value::set(tag&& t)
 }
 
 //Primitive assignment
-//FIXME: Make this less copypaste!
+namespace // helper functions local to this translation unit
+{
+    template<typename T>
+    void assign_numeric_impl(std::unique_ptr<tag>& tag_ptr, T val,
+                             tag_type default_type)
+    {
+        using nbt::tag_type;
+        if(!tag_ptr)
+        {
+            switch(default_type)
+            {
+            case tag_type::Byte: tag_ptr.reset(new tag_byte(static_cast<int8_t>(val))); break;
+            case tag_type::Short: tag_ptr.reset(new tag_short(static_cast<int16_t>(val))); break;
+            case tag_type::Int: tag_ptr.reset(new tag_int(static_cast<int32_t>(val))); break;
+            case tag_type::Long: tag_ptr.reset(new tag_long(static_cast<int64_t>(val))); break;
+            case tag_type::Float: tag_ptr.reset(new tag_float(static_cast<float>(val))); break;
+            case tag_type::Double: tag_ptr.reset(new tag_double(static_cast<double>(val))); break;
+            default: throw std::invalid_argument("Invalid default_type");
+            }
+            return;
+        }
+
+        // Determine the incoming tag type for T
+        auto incoming_type = detail::get_primitive_type<T>::value;
+
+        // If the existing tag is of a narrower type than the incoming type,
+        // replace it with a new tag of the incoming type so the value is not
+        // truncated. Otherwise set the existing tag (possibly narrowing).
+        auto existing_type = tag_ptr->get_type();
+
+        if(static_cast<int>(existing_type) < static_cast<int>(incoming_type))
+        {
+            // replace with a new, wider tag that preserves the value
+            switch(incoming_type)
+            {
+            case tag_type::Byte: tag_ptr.reset(new tag_byte(static_cast<int8_t>(val))); break;
+            case tag_type::Short: tag_ptr.reset(new tag_short(static_cast<int16_t>(val))); break;
+            case tag_type::Int: tag_ptr.reset(new tag_int(static_cast<int32_t>(val))); break;
+            case tag_type::Long: tag_ptr.reset(new tag_long(static_cast<int64_t>(val))); break;
+            case tag_type::Float: tag_ptr.reset(new tag_float(static_cast<float>(val))); break;
+            case tag_type::Double: tag_ptr.reset(new tag_double(static_cast<double>(val))); break;
+            default: throw std::bad_cast();
+            }
+            return;
+        }
+
+        // Existing type is same or wider: write into the existing tag (may narrow)
+        switch(existing_type)
+        {
+        case tag_type::Byte: static_cast<tag_byte&>(*tag_ptr).set(static_cast<int8_t>(val)); break;
+        case tag_type::Short: static_cast<tag_short&>(*tag_ptr).set(static_cast<int16_t>(val)); break;
+        case tag_type::Int: static_cast<tag_int&>(*tag_ptr).set(static_cast<int32_t>(val)); break;
+        case tag_type::Long: static_cast<tag_long&>(*tag_ptr).set(static_cast<int64_t>(val)); break;
+        case tag_type::Float: static_cast<tag_float&>(*tag_ptr).set(static_cast<float>(val)); break;
+        case tag_type::Double: static_cast<tag_double&>(*tag_ptr).set(static_cast<double>(val)); break;
+        default: throw std::bad_cast();
+        }
+    }
+}
+
 value& value::operator=(int8_t val)
 {
-    if(!tag_)
-        set(tag_byte(val));
-    else switch(tag_->get_type())
-    {
-    case tag_type::Byte:
-        static_cast<tag_byte&>(*tag_).set(val);
-        break;
-    case tag_type::Short:
-        static_cast<tag_short&>(*tag_).set(val);
-        break;
-    case tag_type::Int:
-        static_cast<tag_int&>(*tag_).set(val);
-        break;
-    case tag_type::Long:
-        static_cast<tag_long&>(*tag_).set(val);
-        break;
-    case tag_type::Float:
-        static_cast<tag_float&>(*tag_).set(val);
-        break;
-    case tag_type::Double:
-        static_cast<tag_double&>(*tag_).set(val);
-        break;
-
-    default:
-        throw std::bad_cast();
-    }
+    assign_numeric_impl(tag_, val, tag_type::Byte);
     return *this;
 }
 
 value& value::operator=(int16_t val)
 {
-    if(!tag_)
-        set(tag_short(val));
-    else switch(tag_->get_type())
-    {
-    case tag_type::Short:
-        static_cast<tag_short&>(*tag_).set(val);
-        break;
-    case tag_type::Int:
-        static_cast<tag_int&>(*tag_).set(val);
-        break;
-    case tag_type::Long:
-        static_cast<tag_long&>(*tag_).set(val);
-        break;
-    case tag_type::Float:
-        static_cast<tag_float&>(*tag_).set(val);
-        break;
-    case tag_type::Double:
-        static_cast<tag_double&>(*tag_).set(val);
-        break;
-
-    default:
-        throw std::bad_cast();
-    }
+    assign_numeric_impl(tag_, val, tag_type::Short);
     return *this;
 }
 
 value& value::operator=(int32_t val)
 {
-    if(!tag_)
-        set(tag_int(val));
-    else switch(tag_->get_type())
-    {
-    case tag_type::Int:
-        static_cast<tag_int&>(*tag_).set(val);
-        break;
-    case tag_type::Long:
-        static_cast<tag_long&>(*tag_).set(val);
-        break;
-    case tag_type::Float:
-        static_cast<tag_float&>(*tag_).set(val);
-        break;
-    case tag_type::Double:
-        static_cast<tag_double&>(*tag_).set(val);
-        break;
-
-    default:
-        throw std::bad_cast();
-    }
+    assign_numeric_impl(tag_, val, tag_type::Int);
     return *this;
 }
 
 value& value::operator=(int64_t val)
 {
-    if(!tag_)
-        set(tag_long(val));
-    else switch(tag_->get_type())
-    {
-    case tag_type::Long:
-        static_cast<tag_long&>(*tag_).set(val);
-        break;
-    case tag_type::Float:
-        static_cast<tag_float&>(*tag_).set(val);
-        break;
-    case tag_type::Double:
-        static_cast<tag_double&>(*tag_).set(val);
-        break;
-
-    default:
-        throw std::bad_cast();
-    }
+    assign_numeric_impl(tag_, val, tag_type::Long);
     return *this;
 }
 
 value& value::operator=(float val)
 {
-    if(!tag_)
-        set(tag_float(val));
-    else switch(tag_->get_type())
-    {
-    case tag_type::Float:
-        static_cast<tag_float&>(*tag_).set(val);
-        break;
-    case tag_type::Double:
-        static_cast<tag_double&>(*tag_).set(val);
-        break;
-
-    default:
-        throw std::bad_cast();
-    }
+    assign_numeric_impl(tag_, val, tag_type::Float);
     return *this;
 }
 
 value& value::operator=(double val)
 {
-    if(!tag_)
-        set(tag_double(val));
-    else switch(tag_->get_type())
-    {
-    case tag_type::Double:
-        static_cast<tag_double&>(*tag_).set(val);
-        break;
-
-    default:
-        throw std::bad_cast();
-    }
+    assign_numeric_impl(tag_, val, tag_type::Double);
     return *this;
 }
 

@@ -67,7 +67,11 @@ namespace //anonymous
         { os << "[" << ba.size() << " bytes]"; }
 
         void visit(const tag_string& s) override
-        { os << '"' << s.get() << '"'; } //TODO: escape special characters
+        {
+            os << '"';
+            write_escaped_string(s.get());
+            os << '"';
+        }
 
         void visit(const tag_list& l) override
         {
@@ -193,6 +197,29 @@ namespace //anonymous
         void write_null()
         {
             os << "null";
+        }
+
+        void write_escaped_string(const std::string& str)
+        {
+            for (char c : str) {
+                switch (c) {
+                    case '"': os << "\\\""; break;
+                    case '\\': os << "\\\\"; break;
+                    case '\b': os << "\\b"; break;
+                    case '\f': os << "\\f"; break;
+                    case '\n': os << "\\n"; break;
+                    case '\r': os << "\\r"; break;
+                    case '\t': os << "\\t"; break;
+                    default:
+                        if (static_cast<unsigned char>(c) < 32 || c == 127) {
+                            // Control characters, escape as \u00XX
+                            os << "\\u00" << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(static_cast<unsigned char>(c));
+                        } else {
+                            os << c;
+                        }
+                        break;
+                }
+            }
         }
     };
 }
