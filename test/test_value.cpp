@@ -12,15 +12,19 @@ int main()
         v = int8_t(-5);
         std::cout << "assigned int8_t(-5): as int32=" << int32_t(v) << ", as double=" << double(v) << "\n";
 
+        v = value();
         v = int16_t(12345);
         std::cout << "assigned int16_t(12345): as int32=" << int32_t(v) << ", as double=" << double(v) << "\n";
 
+        v = value();
         v = int32_t(100000);
         std::cout << "assigned int32_t(100000): as int64=" << int64_t(v) << ", as double=" << double(v) << "\n";
 
+        v = value();
         v = float(3.14f);
         std::cout << "assigned float(3.14): as double=" << double(v) << "\n";
 
+        v = value();
         v = double(2.718281828);
         std::cout << "assigned double(2.71828): as double=" << double(v) << "\n";
 
