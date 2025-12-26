@@ -91,6 +91,7 @@ int deflate_streambuf::sync()
 
 void ozlibstream::close()
 {
+    std::ios_base::iostate old_ex = exceptions();
     try
     {
         buf.close();
@@ -101,7 +102,6 @@ void ozlibstream::close()
         // `setstate` to throw an `ios_base::failure` which would replace
         // the original exception. Temporarily disable exceptions on this
         // stream, set the `badbit`, then restore the exception mask.
-        std::ios_base::iostate old_ex = exceptions();
         try {
             exceptions(std::ios_base::goodbit);
             setstate(std::ios_base::badbit);

@@ -63,22 +63,30 @@ void value::set(tag&& t)
 namespace // helper functions local to this translation unit
 {
     template<typename T>
+    std::unique_ptr<tag> make_numeric_tag(tag_type type, T val)
+    {
+        switch(type)
+        {
+        case tag_type::Byte: return std::unique_ptr<tag>(new tag_byte(val));
+        case tag_type::Short: return std::unique_ptr<tag>(new tag_short(val));
+        case tag_type::Int: return std::unique_ptr<tag>(new tag_int(val));
+        case tag_type::Long: return std::unique_ptr<tag>(new tag_long(val));
+        case tag_type::Float: return std::unique_ptr<tag>(new tag_float(val));
+        case tag_type::Double: return std::unique_ptr<tag>(new tag_double(val));
+        default: return nullptr;
+        }
+    }
+
+    template<typename T>
     void assign_numeric_impl(std::unique_ptr<tag>& tag_ptr, T val,
                              tag_type default_type)
     {
         using nbt::tag_type;
         if(!tag_ptr)
         {
-            switch(default_type)
-            {
-            case tag_type::Byte: tag_ptr.reset(new tag_byte(static_cast<int8_t>(val))); break;
-            case tag_type::Short: tag_ptr.reset(new tag_short(static_cast<int16_t>(val))); break;
-            case tag_type::Int: tag_ptr.reset(new tag_int(static_cast<int32_t>(val))); break;
-            case tag_type::Long: tag_ptr.reset(new tag_long(static_cast<int64_t>(val))); break;
-            case tag_type::Float: tag_ptr.reset(new tag_float(static_cast<float>(val))); break;
-            case tag_type::Double: tag_ptr.reset(new tag_double(static_cast<double>(val))); break;
-            default: throw std::invalid_argument("Invalid default_type");
-            }
+            tag_ptr = make_numeric_tag(default_type, val);
+            if(!tag_ptr)
+                throw std::invalid_argument("Invalid default_type");
             return;
         }
 
@@ -93,16 +101,9 @@ namespace // helper functions local to this translation unit
         if(static_cast<int>(existing_type) < static_cast<int>(incoming_type))
         {
             // replace with a new, wider tag that preserves the value
-            switch(incoming_type)
-            {
-            case tag_type::Byte: tag_ptr.reset(new tag_byte(static_cast<int8_t>(val))); break;
-            case tag_type::Short: tag_ptr.reset(new tag_short(static_cast<int16_t>(val))); break;
-            case tag_type::Int: tag_ptr.reset(new tag_int(static_cast<int32_t>(val))); break;
-            case tag_type::Long: tag_ptr.reset(new tag_long(static_cast<int64_t>(val))); break;
-            case tag_type::Float: tag_ptr.reset(new tag_float(static_cast<float>(val))); break;
-            case tag_type::Double: tag_ptr.reset(new tag_double(static_cast<double>(val))); break;
-            default: throw std::bad_cast();
-            }
+            tag_ptr = make_numeric_tag(incoming_type, val);
+            if(!tag_ptr)
+                throw std::bad_cast();
             return;
         }
 
