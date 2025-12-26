@@ -58,6 +58,7 @@ build_data(DATA_OBJECTS
     trailing_data.zlib
 )
 add_library(NbtTestData STATIC ${DATA_OBJECTS})
+set_property(TARGET NbtTestData PROPERTY LINKER_LANGUAGE CXX)
 
 #Specifies that the directory containing the testfiles get copied when the target is built
 function(use_testfiles target)

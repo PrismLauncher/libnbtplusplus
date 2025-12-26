@@ -94,17 +94,12 @@ namespace // helper functions local to this translation unit
         auto incoming_type = detail::get_primitive_type<T>::value;
 
         // If the existing tag is of a narrower type than the incoming type,
-        // replace it with a new tag of the incoming type so the value is not
-        // truncated. Otherwise set the existing tag (possibly narrowing).
+        // reject the assignment to avoid widening the stored tag type.
         auto existing_type = tag_ptr->get_type();
 
         if(static_cast<int>(existing_type) < static_cast<int>(incoming_type))
         {
-            // replace with a new, wider tag that preserves the value
-            tag_ptr = make_numeric_tag(incoming_type, val);
-            if(!tag_ptr)
-                throw std::bad_cast();
-            return;
+            throw std::bad_cast();
         }
 
         // Existing type is same or wider: write into the existing tag (may narrow)

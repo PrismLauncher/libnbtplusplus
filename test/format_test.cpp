@@ -83,15 +83,17 @@ int main()
 
     // Write to file and read back
     {
+        tag_compound file_comp = comp;
+        file_comp.erase("null");
         std::ofstream out("test_output.nbt", std::ios::binary);
-        nbt::io::write_compound(out, comp);
+        nbt::io::write_tag("root", file_comp, out);
     }
 
     {
         std::ifstream in("test_output.nbt", std::ios::binary);
-        auto [read_comp, name] = nbt::io::read_compound(in);
+        auto read_pair = nbt::io::read_compound(in);
         std::cout << "----- read back from file:\n";
-        std::cout << read_comp;
+        std::cout << *read_pair.second;
         std::cout << "\n-----" << std::endl;
     }
 
