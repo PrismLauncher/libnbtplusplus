@@ -91,27 +91,33 @@ int deflate_streambuf::sync()
 
 void ozlibstream::close()
 {
+    // Capture the exception mask so we can restore it if close() fails.
     std::ios_base::iostate old_ex = exceptions();
+    bool close_failed = false;
     try
     {
         buf.close();
     }
     catch(...)
     {
-        // Setting the stream state while exceptions are enabled may cause
-        // `setstate` to throw an `ios_base::failure` which would replace
-        // the original exception. Temporarily disable exceptions on this
-        // stream, set the `badbit`, then restore the exception mask.
-        try {
-            exceptions(std::ios_base::goodbit);
-            setstate(std::ios_base::badbit);
-        }
-        catch(...) {
-            // If anything unexpected happens while setting state, swallow
-            // it — we don't want this to throw here.
-        }
-        exceptions(old_ex);
+        close_failed = true;
     }
+    if(!close_failed)
+        return;
+
+    // Setting the stream state while exceptions are enabled may cause
+    // `setstate` to throw an `ios_base::failure` which would replace
+    // the original exception. Temporarily disable exceptions on this
+    // stream, set the `badbit`, then restore the exception mask.
+    try {
+        exceptions(std::ios_base::goodbit);
+        setstate(std::ios_base::badbit);
+    }
+    catch(...) {
+        // If anything unexpected happens while setting state, swallow
+        // it — we don't want this to throw here.
+    }
+    exceptions(old_ex);
 }
 
 }
