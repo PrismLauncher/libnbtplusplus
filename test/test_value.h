@@ -23,7 +23,7 @@ public:
         v = value();
         v = int32_t(100000);
         TS_ASSERT_EQUALS(int64_t(v), int64_t(100000));
-        TS_ASSERT_EQUALS(double(v), static_cast<double>(int32_t(100000)));
+        TS_ASSERT_EQUALS(double(v), 100000.);
 
         v = value();
         v = float(3.14f);
