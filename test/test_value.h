@@ -27,7 +27,7 @@ public:
 
         v = value();
         v = float(3.14f);
-        TS_ASSERT_EQUALS(double(v), static_cast<double>(3.14f));
+        TS_ASSERT_EQUALS(double(v), 3.14);
 
         v = value();
         v = double(2.718281828);
