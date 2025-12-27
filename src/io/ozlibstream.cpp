@@ -109,15 +109,14 @@ void ozlibstream::close()
     // `setstate` to throw an `ios_base::failure` which would replace
     // the original exception. Temporarily disable exceptions on this
     // stream, set the `badbit`, then restore the exception mask.
+    std::ios_base::iostate old_ex = exceptions();
+    exceptions(std::ios_base::goodbit);
+    setstate(std::ios_base::badbit);
     try {
-        exceptions(std::ios_base::goodbit);
-        setstate(std::ios_base::badbit);
+      exceptions(old_ex);
+    } catch (...) {
+      // If anything unexpected happens while restoring the exception mask,
+      // swallow it — we don't want this to throw here.
     }
-    catch(...) {
-        // If anything unexpected happens while setting state, swallow
-        // it — we don't want this to throw here.
-    }
-    exceptions(old_ex);
-}
-
+  }
 }
