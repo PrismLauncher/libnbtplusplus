@@ -18,7 +18,7 @@ public:
         v = value();
         v = int16_t(12345);
         TS_ASSERT_EQUALS(int32_t(v), int32_t(12345));
-        TS_ASSERT_EQUALS(double(v), static_cast<double>(int16_t(12345)));
+        TS_ASSERT_EQUALS(double(v), 12345.);
 
         v = value();
         v = int32_t(100000);
