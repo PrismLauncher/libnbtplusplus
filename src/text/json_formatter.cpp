@@ -211,7 +211,7 @@ namespace //anonymous
                     case '\r': os << "\\r"; break;
                     case '\t': os << "\\t"; break;
                     default:
-                        if (static_cast<unsigned char>(c) < 32 || c == 127) {
+                        if (c < 32 || c == 127) {
                             // Control characters, escape as \u00XX
                             os << "\\u00" << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(c);
                         } else {
