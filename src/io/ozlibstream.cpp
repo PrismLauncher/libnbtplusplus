@@ -109,15 +109,7 @@ void ozlibstream::close()
     // stream, set the `badbit`, then restore the exception mask.
     exceptions(std::ios_base::goodbit);
     setstate(std::ios_base::badbit);
-    try
-    {
-        exceptions(old_ex);
-    }
-    catch(...)
-    {
-        // If anything unexpected happens while restoring the exception mask,
-        // swallow it — we don't want this to throw here.
-    }
+    exceptions(old_ex);
 }
 
 } // namespace zlib
