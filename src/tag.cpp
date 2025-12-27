@@ -41,6 +41,24 @@ std::unique_ptr<tag> tag::clone() &&
     return std::move(*this).move_clone();
 }
 
+namespace
+{
+    template<typename T>
+    std::unique_ptr<tag> create_numeric_tag(tag_type type, T val)
+    {
+        switch(type)
+        {
+        case tag_type::Byte:        return make_unique<tag_byte>(static_cast<int8_t>(val));
+        case tag_type::Short:       return make_unique<tag_short>(static_cast<int16_t>(val));
+        case tag_type::Int:         return make_unique<tag_int>(static_cast<int32_t>(val));
+        case tag_type::Long:        return make_unique<tag_long>(static_cast<int64_t>(val));
+        case tag_type::Float:       return make_unique<tag_float>(static_cast<float>(val));
+        case tag_type::Double:      return make_unique<tag_double>(static_cast<double>(val));
+        default: throw std::invalid_argument("Invalid numeric tag type");
+        }
+    }
+}
+
 std::unique_ptr<tag> tag::create(tag_type type)
 {
     switch(type)
@@ -60,6 +78,36 @@ std::unique_ptr<tag> tag::create(tag_type type)
 
     default: throw std::invalid_argument("Invalid tag type");
     }
+}
+
+std::unique_ptr<tag> tag::create(tag_type type, int8_t val)
+{
+    return create_numeric_tag(type, val);
+}
+
+std::unique_ptr<tag> tag::create(tag_type type, int16_t val)
+{
+    return create_numeric_tag(type, val);
+}
+
+std::unique_ptr<tag> tag::create(tag_type type, int32_t val)
+{
+    return create_numeric_tag(type, val);
+}
+
+std::unique_ptr<tag> tag::create(tag_type type, int64_t val)
+{
+    return create_numeric_tag(type, val);
+}
+
+std::unique_ptr<tag> tag::create(tag_type type, float val)
+{
+    return create_numeric_tag(type, val);
+}
+
+std::unique_ptr<tag> tag::create(tag_type type, double val)
+{
+    return create_numeric_tag(type, val);
 }
 
 bool operator==(const tag& lhs, const tag& rhs)

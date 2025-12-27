@@ -117,6 +117,16 @@ public:
      * @throw std::invalid_argument if the type is not valid (e.g. End or Null)
      */
     static std::unique_ptr<tag> create(tag_type type);
+    /**
+     * @brief Constructs a numeric tag of the given type and value
+     * @throw std::invalid_argument if the type is not numeric
+     */
+    static std::unique_ptr<tag> create(tag_type type, int8_t val);
+    static std::unique_ptr<tag> create(tag_type type, int16_t val);
+    static std::unique_ptr<tag> create(tag_type type, int32_t val);
+    static std::unique_ptr<tag> create(tag_type type, int64_t val);
+    static std::unique_ptr<tag> create(tag_type type, float val);
+    static std::unique_ptr<tag> create(tag_type type, double val);
 
     friend NBT_EXPORT bool operator==(const tag& lhs, const tag& rhs);
     friend NBT_EXPORT bool operator!=(const tag& lhs, const tag& rhs);

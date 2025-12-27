@@ -63,30 +63,13 @@ void value::set(tag&& t)
 namespace // helper functions local to this translation unit
 {
     template<typename T>
-    std::unique_ptr<tag> make_numeric_tag(tag_type type, T val)
-    {
-        switch(type)
-        {
-        case tag_type::Byte: return std::unique_ptr<tag>(new tag_byte(val));
-        case tag_type::Short: return std::unique_ptr<tag>(new tag_short(val));
-        case tag_type::Int: return std::unique_ptr<tag>(new tag_int(val));
-        case tag_type::Long: return std::unique_ptr<tag>(new tag_long(val));
-        case tag_type::Float: return std::unique_ptr<tag>(new tag_float(val));
-        case tag_type::Double: return std::unique_ptr<tag>(new tag_double(val));
-        default: return nullptr;
-        }
-    }
-
-    template<typename T>
     void assign_numeric_impl(std::unique_ptr<tag>& tag_ptr, T val,
                              tag_type default_type)
     {
         using nbt::tag_type;
         if(!tag_ptr)
         {
-            tag_ptr = make_numeric_tag(default_type, val);
-            if(!tag_ptr)
-                throw std::invalid_argument("Invalid default_type");
+            tag_ptr = tag::create(default_type, val);
             return;
         }
 
