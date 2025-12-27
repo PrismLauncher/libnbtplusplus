@@ -13,7 +13,7 @@ public:
 
         v = int8_t(-5);
         TS_ASSERT_EQUALS(int32_t(v), int32_t(-5));
-        TS_ASSERT_EQUALS(double(v), static_cast<double>(int8_t(-5)));
+        TS_ASSERT_EQUALS(double(v), 5.);
 
         v = value();
         v = int16_t(12345);
