@@ -93,30 +93,31 @@ void ozlibstream::close()
 {
     // Capture the exception mask so we can restore it if close() fails.
     std::ios_base::iostate old_ex = exceptions();
-    bool close_failed = false;
     try
     {
         buf.close();
+        return;
     }
     catch(...)
     {
-        close_failed = true;
+        // fall through to mark the stream as bad
     }
-    if(!close_failed)
-        return;
 
     // Setting the stream state while exceptions are enabled may cause
     // `setstate` to throw an `ios_base::failure` which would replace
     // the original exception. Temporarily disable exceptions on this
     // stream, set the `badbit`, then restore the exception mask.
-    std::ios_base::iostate old_ex = exceptions();
     exceptions(std::ios_base::goodbit);
     setstate(std::ios_base::badbit);
-    try {
-      exceptions(old_ex);
-    } catch (...) {
-      // If anything unexpected happens while restoring the exception mask,
-      // swallow it — we don't want this to throw here.
+    try
+    {
+        exceptions(old_ex);
     }
-  }
+    catch(...)
+    {
+        // If anything unexpected happens while restoring the exception mask,
+        // swallow it — we don't want this to throw here.
+    }
 }
+
+} // namespace zlib
