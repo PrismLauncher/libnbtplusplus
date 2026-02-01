@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2013, 2015 ljfa-ag <ljfa-ag@web.de>
+#
+# SPDX-License-Identifier: LGPL-3.0-or-later
+
 cmake_minimum_required(VERSION 3.15)
 project(libnbt++
     VERSION 2.3)
