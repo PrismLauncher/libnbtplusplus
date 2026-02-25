@@ -1,3 +1,9 @@
+/*
+ * SPDX-FileCopyrightText: 2013, 2015 ljfa-ag <ljfa-ag@web.de>
+ *
+ * SPDX-License-Identifier: LGPL-3.0-or-later
+ */
+
 #pragma once
 
 #include <cstdint>

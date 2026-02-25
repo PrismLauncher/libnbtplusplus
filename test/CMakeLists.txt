@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2013, 2015 ljfa-ag <ljfa-ag@web.de>
+#
+# SPDX-License-Identifier: LGPL-3.0-or-later
+
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     if(CMAKE_SYSTEM_PROCESSOR STREQUAL x86_64 OR CMAKE_SYSTEM_PROCESSOR STREQUAL amd64)
         set(OBJCOPY_TARGET "elf64-x86-64")

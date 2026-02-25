@@ -1,3 +1,9 @@
+/*
+ * SPDX-FileCopyrightText: 2013, 2015 ljfa-ag <ljfa-ag@web.de>
+ *
+ * SPDX-License-Identifier: LGPL-3.0-or-later
+ */
+
 #ifndef ZLIB_STREAMBUF_H_INCLUDED
 #define ZLIB_STREAMBUF_H_INCLUDED
 
